@@ -4,7 +4,7 @@
   "description": "Webdriver io e2e with github actions",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node_modules/.bin/wdio wdio.conf.js",
     "wdio": "wdio run ./wdio.conf.js"
   },
   "repository": {
@@ -24,6 +24,7 @@
   "homepage": "https://github.com/QuocBaoNguyen11295/webdriverio_github_actions#readme",
   "devDependencies": {
     "@wdio/cli": "^8.3.5",
+    "@wdio/junit-reporter": "^8.3.0",
     "@wdio/local-runner": "^8.3.5",
     "@wdio/mocha-framework": "^8.3.0",
     "@wdio/spec-reporter": "^8.3.0",

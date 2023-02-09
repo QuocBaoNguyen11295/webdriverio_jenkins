@@ -23,7 +23,7 @@ exports.config = {
     // will be called from there.
     //
     specs: [
-        './test/specs/**/*.js'
+        './test/specs/*.e2e.js'
     ],
     // Patterns to exclude.
     exclude: [
@@ -197,8 +197,62 @@ exports.config = {
      * @param {Array.<String>} specs        List of spec file paths that are to be run
      * @param {Object}         browser      instance of created browser/device session
      */
-    // before: function (capabilities, specs) {
-    // },
+    before: function (capabilities, specs) {
+        browser.addCommand('load_page',async()=>{
+            await browser.url('http://zero.webappsecurity.com/index.html')
+            await browser.maximizeWindow()
+        })
+        browser.addCommand('click_signin',async(text_button)=>{
+            const sign_in_button = await $(`button*=${text_button}`)
+            await sign_in_button.waitForClickable({timeout:3000})
+            await sign_in_button.click()
+        })
+        browser.addCommand('load_login_form',async()=>{
+            const login_form = await $('#login_form')
+            await login_form.waitForDisplayed({timeout:3000})
+        })
+        browser.addCommand('fill_username',async(username)=>{
+            await $('#user_login').setValue(username)
+        })
+
+        browser.addCommand('fill_password',async(password)=>{
+            await $('#user_password').setValue(password)
+        })
+
+        browser.addCommand('check_remember_me',async()=>{
+            const checkbox = await $('#user_remember_me')
+            await checkbox.waitForClickable({timeout:3000})
+            await checkbox.click()
+        })
+
+        browser.addCommand('click_sign_in',async(label)=>{
+            const sign_in_button = await $(`[value="${label}"]`)
+            await sign_in_button.waitForClickable({timeout:3000})
+            await sign_in_button.click()
+        })
+
+        browser.addCommand('check_login_successfully',async(username)=>{
+            await browser.navigateTo('http://zero.webappsecurity.com/')
+            const username_locator = await $('a=Logout').$('..').$('..').$('..').$(`a=${username}`)
+            await username_locator.waitForDisplayed({timeout:3000})
+        })
+
+        browser.addCommand('check_login_unsuccessfully',async(error_message)=>{
+            const error_message_locator = await $(`div*=${error_message}`)
+            await expect(error_message_locator).toBeDisplayed({timeout:3000})
+        })
+
+        browser.addCommand('click_logout',async(username)=>{
+            const username_locator = await $('a=Logout').$('..').$('..').$('..').$(`a=${username}`)
+            const logout_button = await $('a=Logout')
+            const sign_in_button = await $('button*=Signin')
+            await username_locator.waitForClickable({timeout:5000})
+            await username_locator.click()
+            await logout_button.waitForClickable({timeout:5000})
+            await logout_button.click()
+            await sign_in_button.waitForClickable({timeout:5000})
+        })
+    },
     /**
      * Runs before a WebdriverIO command gets executed.
      * @param {String} commandName hook command name
