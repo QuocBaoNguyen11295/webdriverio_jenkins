@@ -4,7 +4,7 @@
   "description": "Webdriver io e2e with github actions",
   "main": "index.js",
   "scripts": {
-    "login": "wdio run ./wdio.conf.js -suite login",
+    "login": "wdio run ./wdio.conf.js --suite login",
     "forgot_password": "wdio run ./wdio.conf.js --suite forgot_password",
     "wdio": "wdio run ./wdio.conf.js"
   },
