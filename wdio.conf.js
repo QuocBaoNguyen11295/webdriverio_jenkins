@@ -25,6 +25,10 @@ exports.config = {
     specs: [
         './test/specs/*.e2e.js'
     ],
+    suites:{
+        login:['./test/specs/login.e2e.js'],
+        forgot_password:['./test/specs/forgot_password.e2e.js']
+    },
     // Patterns to exclude.
     exclude: [
         // 'path/to/excluded/files'
@@ -251,6 +255,36 @@ exports.config = {
             await logout_button.waitForClickable({timeout:5000})
             await logout_button.click()
             await sign_in_button.waitForClickable({timeout:5000})
+        })
+
+        //---- forgot password ----//
+        browser.addCommand('click_forgot_password',async()=>{
+            const forgot_password_link = await $('a=Forgot your password ?')
+            await forgot_password_link.click()
+        })
+
+        browser.addCommand('check_forgot_password_page',async()=>{
+            const header = await $('h3')
+            const paragraph = await $('h3').$('..').$('..').$('..').$('p')
+            await expect(header).toHaveTextContaining(`Forgotten Password`)
+            await expect(paragraph).toHaveTextContaining(`So you forgot your password? Give us your email address and we will email it to you.`)
+        })
+
+        browser.addCommand('fill_out_email',async(email)=>{
+            const input_email = await $('h3').$('..').$('..').$('..').$('p').$('..').$('label=Email').$('..').$('input')
+            await input_email.setValue(email)
+        })
+
+        browser.addCommand('click_send_password',async()=>{
+            const button_send_password = await $('[value="Send Password"]')
+            await button_send_password.click()
+        })
+
+        browser.addCommand('check_send_password_successfully',async(email)=>{
+            const header = await $('h3')
+            const paragraph = await $('h3').$('..').$('..').$('..').$(`div*=Your password will be sent to the following email: ${email}`)
+            await expect(header).toHaveTextContaining('Forgotten Password')
+            await expect(paragraph).toBeDisplayed()
         })
     },
     /**
