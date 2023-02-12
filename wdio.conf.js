@@ -27,7 +27,8 @@ exports.config = {
     ],
     suites:{
         login:['./test/specs/login.e2e.js'],
-        forgot_password:['./test/specs/forgot_password.e2e.js']
+        forgot_password:['./test/specs/forgot_password.e2e.js'],
+        feedback:['./test/specs/feedback.e2e.js']
     },
     // Patterns to exclude.
     exclude: [
@@ -285,6 +286,44 @@ exports.config = {
             const paragraph = await $('h3').$('..').$('..').$('..').$(`div*=Your password will be sent to the following email: ${email}`)
             await expect(header).toHaveTextContaining('Forgotten Password')
             await expect(paragraph).toBeDisplayed()
+        })
+        //---- open tab ----//
+        browser.addCommand('open_tab',async(tabname)=>{
+            const tab = await $(`div=${tabname}`)
+            await tab.click()
+        })
+
+        browser.addCommand('open_feedback_tab_sucessfully',async()=>{
+            const header = await $('h3')
+            const paragraph_1 = await $('#faq-link').$('..').$('..').$('p')
+            const paragraph_2 = await $('#faq-link').$('..').$('..').$('..').$('#description').nextElement()
+            await expect(header).toHaveTextContaining('Feedback')
+            await expect(paragraph_1).toHaveTextContaining(`Our Frequently Asked Questions area will help you with many of your inquiries.\nIf you can't find your question, return to this page and use the e-mail form below.`)
+            await expect(paragraph_2).toHaveTextContaining(`IMPORTANT! This feedback facility is not secure. Please do not send any\naccount information in a message sent from here.`)
+        })
+
+        browser.addCommand('fill_feedback_form',async(user_name,email,title,message)=>{
+            const user_name_field = await $(`[placeholder="Your Name"]`)
+            const email_field = await $('[placeholder="Your email address"]')
+            const title_field = await $('[placeholder="Subject"]')
+            const message_field = await $('[placeholder="Type your questions here..."]')
+            await user_name_field.setValue(user_name)
+            await email_field.setValue(email)
+            await title_field.setValue(title)
+            await message_field.setValue(message)
+        })
+
+        browser.addCommand('click_send_feedback',async()=>{
+            const button_send_feedback = await $('[value="Send Message"]')
+            await button_send_feedback.waitForClickable()
+            await button_send_feedback.click()
+        })
+
+        browser.addCommand('check_send_message_successfully',async(name)=>{
+            const header = await $('h3')
+            const paragraph = await $('h3').$('..').$('..').$('..').$('.page-header').parentElement()
+            await expect(header).toHaveTextContaining('Feedback')
+            await expect(paragraph).toHaveTextContaining(`Thank you for your comments, ${name}. They will be reviewed by our Customer Service staff and given the full attention that they deserve.`)
         })
     },
     /**

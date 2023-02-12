@@ -6,6 +6,7 @@
   "scripts": {
     "login": "wdio run ./wdio.conf.js --suite login",
     "forgot_password": "wdio run ./wdio.conf.js --suite forgot_password",
+    "feedback": "wdio run ./wdio.conf.js --suite feedback",
     "wdio": "wdio run ./wdio.conf.js"
   },
   "repository": {
