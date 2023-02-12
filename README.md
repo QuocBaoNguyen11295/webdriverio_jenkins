@@ -1,4 +1,4 @@
-# webdriverio_github_actions
+# Webdriver.io E2E integrated with Jenkins CI/CD
 
 ## How to run CI/CD with Jenkins
 ```
