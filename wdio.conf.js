@@ -28,7 +28,8 @@ exports.config = {
     suites:{
         login:['./test/specs/login.e2e.js'],
         forgot_password:['./test/specs/forgot_password.e2e.js'],
-        feedback:['./test/specs/feedback.e2e.js']
+        feedback:['./test/specs/feedback.e2e.js'],
+        transfer_fund:['./test/specs/transfer_fund.e2e.js']
     },
     // Patterns to exclude.
     exclude: [
@@ -247,6 +248,19 @@ exports.config = {
             await expect(error_message_locator).toBeDisplayed({timeout:3000})
         })
 
+        //------ login for all -------//
+        browser.addCommand('login_user',async(username,password)=>{
+            await browser.click_signin('Signin')
+            await browser.load_login_form()
+            await browser.fill_username(username)
+            await browser.fill_password(password)
+            await browser.check_remember_me()
+            await browser.click_sign_in('Sign in')
+            await browser.check_login_successfully(username)
+        })
+        //-----------------------------
+
+
         browser.addCommand('click_logout',async(username)=>{
             const username_locator = await $('a=Logout').$('..').$('..').$('..').$(`a=${username}`)
             const logout_button = await $('a=Logout')
@@ -324,6 +338,75 @@ exports.config = {
             const paragraph = await $('h3').$('..').$('..').$('..').$('.page-header').parentElement()
             await expect(header).toHaveTextContaining('Feedback')
             await expect(paragraph).toHaveTextContaining(`Thank you for your comments, ${name}. They will be reviewed by our Customer Service staff and given the full attention that they deserve.`)
+        })
+
+        //---- Transfer fund ----//
+        browser.addCommand('check_open_online_banking_successfully',async()=>{
+            const header = await $('h1')
+            const paragraph = await $('h1').parentElement().$('p')
+            await expect(header).toHaveTextContaining('Online Banking')
+            await expect(paragraph).toHaveTextContaining('Pay bills easily')
+        })
+
+        browser.addCommand('open_online_banking_service',async(service_name)=>{
+            const service = await $(`span=${service_name}`)
+            await service.waitForClickable()
+            await service.click()
+        })
+
+        browser.addCommand('open_service_successfully',async(service_title)=>{
+            const service_title_locator = await $(`h2`)
+            await expect(service_title_locator).toHaveTextContaining(service_title)
+        })
+
+        browser.addCommand('transfer_money',async(from_account,to_account,amount_money,description_transfer)=>{
+            const from_account_locator = await $('label=From Account').parentElement().$('select').$(`option*=${from_account}`)
+            const to_account_locator = await $('label=To Account').parentElement().$('select').$(`option*=${to_account}`)
+            const amount = await $('label=Amount').parentElement().$('input')
+            const description = await $('label=Description').parentElement().$('input')
+            const button = await $('button=Continue')
+            await from_account_locator.click()
+            await to_account_locator.click()
+            await amount.setValue(amount_money)
+            await description.setValue(description_transfer)
+            await button.waitForClickable()
+            await button.click()
+        })
+
+        browser.addCommand('confirm_transfer',async(from_account,to_account,amount,description)=>{
+            const header = await $('h2')
+            const paragraph = await $('h2').$('..').$('..').$('p')
+            const from_account_locator = await $('label=From Account').parentElement().$('input')
+            const to_account_locator = await $('label=To Account').parentElement().$('input')
+            const amount_locator = await $('label=Amount').parentElement().$('input')
+            const description_locator = await $('label=Description').parentElement().$('input')
+            await expect(from_account_locator).toHaveValueContaining(from_account)
+            await expect(to_account_locator).toHaveValueContaining(to_account)
+            await expect(header).toHaveTextContaining('Transfer Money & Make Payments - Verify')
+            await expect(paragraph).toHaveTextContaining('Please verify that the following transaction is correct by selecting the Submit button below.')
+            await expect(amount_locator).toHaveValueContaining(amount)
+            await expect(description_locator).toHaveValueContaining(description)
+        })
+
+        browser.addCommand('click_submit_button',async()=>{
+            const button = await $('button=Submit')
+            await button.waitForClickable()
+            await button.click()
+        })
+
+        browser.addCommand('check_transferring_transaction_successfully',async(from_account,to_account,amount)=>{
+            const header = await $('h2')
+            const message = await $('.alert-success')
+            const from_account_locator = await $('strong=From Account').$('..').$('..').$('..').$(`div*=${from_account}`)
+            const to_account_locator = await $('strong=To Account').$('..').$('..').$('..').$(`div*=${to_account}`)
+            const amount_locator = await $('strong=Amount').$('..').$('..').$('..').$(`div*=$ ${amount}`)
+            await header.waitForDisplayed()
+            await message.waitForDisplayed()
+            await expect(header).toHaveTextContaining('Transfer Money & Make Payments - Confirm')
+            await expect(message).toHaveTextContaining('You successfully submitted your transaction.')
+            await expect(from_account_locator).toBeDisplayed()
+            await expect(to_account_locator).toBeDisplayed()
+            await expect(amount_locator).toBeDisplayed()
         })
     },
     /**
