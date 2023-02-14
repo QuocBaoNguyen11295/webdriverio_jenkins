@@ -7,7 +7,8 @@
     "login": "wdio run ./wdio.conf.js --suite login",
     "forgot_password": "wdio run ./wdio.conf.js --suite forgot_password",
     "feedback": "wdio run ./wdio.conf.js --suite feedback",
-    "transfer_fund" : "wdio run ./wdio.conf.js --suite transfer_fund",
+    "transfer_fund": "wdio run ./wdio.conf.js --suite transfer_fund",
+    "pay_saved_payee": "wdio run ./wdio.conf.js --suite pay_saved_payee",
     "wdio": "wdio run ./wdio.conf.js"
   },
   "repository": {
@@ -33,5 +34,8 @@
     "@wdio/spec-reporter": "^8.3.0",
     "chromedriver": "^110.0.0",
     "wdio-chromedriver-service": "^8.0.1"
+  },
+  "dependencies": {
+    "moment": "^2.29.4"
   }
 }

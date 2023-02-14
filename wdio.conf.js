@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 exports.config = {
     //
     // ====================
@@ -29,7 +31,8 @@ exports.config = {
         login:['./test/specs/login.e2e.js'],
         forgot_password:['./test/specs/forgot_password.e2e.js'],
         feedback:['./test/specs/feedback.e2e.js'],
-        transfer_fund:['./test/specs/transfer_fund.e2e.js']
+        transfer_fund:['./test/specs/transfer_fund.e2e.js'],
+        pay_saved_payee: ['./test/specs/pay_saved_payee.e2e.js']
     },
     // Patterns to exclude.
     exclude: [
@@ -407,6 +410,58 @@ exports.config = {
             await expect(from_account_locator).toBeDisplayed()
             await expect(to_account_locator).toBeDisplayed()
             await expect(amount_locator).toBeDisplayed()
+        })
+
+        browser.addCommand('select_date_add_new_payee',async(date, dateToSelect)=>{
+            const input_date = await $('//input[@name="date"]')
+            await input_date.click()
+            const prev = await $('//span[text()="Prev"]')
+            const next = await $('//span[text()="Next"]')
+            const mm = await $('.ui-datepicker-title > .ui-datepicker-month')
+            const yy = await $('.ui-datepicker-title > .ui-datepicker-year')
+            let mmyy_text_content = await mm.getText() + " " + await yy.getText()
+            //console.log(mmyy_text_content)
+            const thisMonth = moment(dateToSelect, "MMMM YYYY").isBefore();
+            console.log(thisMonth)
+            
+            while(mmyy_text_content != dateToSelect){
+                if(thisMonth){
+                    await prev.click()
+                    mmyy_text_content = await mm.getText() + " " + await yy.getText()
+                }else{
+                    await next.click()
+                    mmyy_text_content = await mm.getText() + " " + await yy.getText()
+                }
+            }
+            const date_locator = await $(`//td//a[text()=${date}]`)
+            await date_locator.click()
+        })
+
+        browser.addCommand('open_pay_saved_payee',async()=>{
+            const pay_saved_payee = await $('a=Pay Saved Payee')
+            await pay_saved_payee.click()
+        })
+
+        browser.addCommand('fill_out_the_pay_saved_payee',async(payee_bank,account_type,amount_money,date,month_year,description_payee)=>{
+            const payee = await $('label=Payee').$('..').$('select').$(`option=${payee_bank}`)
+            const account = await $('label=Account').$('..').$('select').$(`option=${account_type}`)
+            const amount = await $('label=Amount').$('..').$('input')
+            const description = await $('label=Description').$('..').$('input')
+            await payee.click()
+            await account.click()
+            await amount.setValue(amount_money)
+            await browser.select_date_add_new_payee(date,month_year)
+            await description.setValue(description_payee)
+        })
+
+        browser.addCommand('click_pay_button',async()=>{
+            const button = $('[value="Pay"]')
+            await button.click()
+        })
+
+        browser.addCommand('show_message_successfully',async()=>{
+            const message = $('#alert_content').$('span')
+            await expect(message).toHaveTextContaining('The payment was successfully submitted.')
         })
     },
     /**
