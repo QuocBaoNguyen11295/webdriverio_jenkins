@@ -32,7 +32,8 @@ exports.config = {
         forgot_password:['./test/specs/forgot_password.e2e.js'],
         feedback:['./test/specs/feedback.e2e.js'],
         transfer_fund:['./test/specs/transfer_fund.e2e.js'],
-        pay_saved_payee: ['./test/specs/pay_saved_payee.e2e.js']
+        pay_saved_payee: ['./test/specs/pay_saved_payee.e2e.js'],
+        add_new_payee: ['./test/specs/add_new_payee.e2e.js']
     },
     // Patterns to exclude.
     exclude: [
@@ -358,8 +359,8 @@ exports.config = {
         })
 
         browser.addCommand('open_service_successfully',async(service_title)=>{
-            const service_title_locator = await $(`h2`)
-            await expect(service_title_locator).toHaveTextContaining(service_title)
+            const service_title_locator = await $(`h2=${service_title}`)
+            await expect(service_title_locator).toBeDisplayed()
         })
 
         browser.addCommand('transfer_money',async(from_account,to_account,amount_money,description_transfer)=>{
@@ -462,6 +463,39 @@ exports.config = {
         browser.addCommand('show_message_successfully',async()=>{
             const message = $('#alert_content').$('span')
             await expect(message).toHaveTextContaining('The payment was successfully submitted.')
+        })
+
+        browser.addCommand('open_tab_payee',async(payee_tab)=>{
+            const payee_tab_locator = await $(`a=${payee_tab}`)
+            await payee_tab_locator.waitForClickable()
+            await payee_tab_locator.click()
+        })
+
+        browser.addCommand('fill_out_add_new_payee',async(name,address,account,details)=>{
+            const payee_name_locator = await $('h2=Who are you paying?').parentElement().$('label=Payee Name').parentElement().$('input')
+            await payee_name_locator.waitForDisplayed()
+            await payee_name_locator.setValue(name)
+            const payee_address_locator = await $('h2=Who are you paying?').parentElement().$('label=Payee Address').parentElement().$('textarea')
+            await payee_address_locator.waitForDisplayed()
+            await payee_address_locator.setValue(address)
+            const payee_account_locator = await $('h2=Who are you paying?').parentElement().$('label=Account').parentElement().$('input')
+            await payee_account_locator.waitForDisplayed()
+            await payee_account_locator.setValue(account)
+            const payee_details_locator = await $('h2=Who are you paying?').parentElement().$('label=Payee Details').parentElement().$('input')
+            await payee_details_locator.waitForDisplayed()
+            await payee_details_locator.setValue(details)
+        })
+
+        browser.addCommand('click_add_button_for_add_new_payee',async()=>{
+            const add_new_payee_button = await $('[value=Add]')
+            await add_new_payee_button.waitForClickable()
+            await add_new_payee_button.click()
+        })
+
+        browser.addCommand('check_add_new_payee_successfully',async(name)=>{
+            const message = await $('#alert_content')
+            await message.waitForDisplayed()
+            await expect(message).toHaveTextContaining(`The new payee ${name} was successfully created.`)
         })
     },
     /**
