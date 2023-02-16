@@ -10,7 +10,7 @@ describe('Add new payee',()=>{
         await browser.open_online_banking_service('Pay Bills')
         await browser.open_tab_payee('Add New Payee')
         await browser.open_service_successfully('Who are you paying?')
-        await browser.fill_out_add_new_payee('Quoc Bao Nguyen','Test Bao','123/33 Duong Van Duong street','Test')
+        await browser.fill_out_add_new_payee('Quoc Bao Nguyen','Test Bao','123/33 Le Van Sy street','Test')
         await browser.click_add_button_for_add_new_payee()
         await browser.check_add_new_payee_successfully('Quoc Bao Nguyen')
     })
