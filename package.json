@@ -10,6 +10,7 @@
     "transfer_fund": "wdio run ./wdio.conf.js --suite transfer_fund",
     "pay_saved_payee": "wdio run ./wdio.conf.js --suite pay_saved_payee",
     "add_new_payee":"wdio run ./wdio.conf.js --suite add_new_payee",
+    "purchase_foreign_currency": "wdio run ./wdio.conf.js --suite purchase_foreign_currency",
     "wdio": "wdio run ./wdio.conf.js"
   },
   "repository": {

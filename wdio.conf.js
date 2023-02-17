@@ -33,7 +33,8 @@ exports.config = {
         feedback:['./test/specs/feedback.e2e.js'],
         transfer_fund:['./test/specs/transfer_fund.e2e.js'],
         pay_saved_payee: ['./test/specs/pay_saved_payee.e2e.js'],
-        add_new_payee: ['./test/specs/add_new_payee.e2e.js']
+        add_new_payee: ['./test/specs/add_new_payee.e2e.js'],
+        purchase_foreign_currency: ['./test/specs/purchase_foreign_currency.e2e.js']
     },
     // Patterns to exclude.
     exclude: [
@@ -506,6 +507,39 @@ exports.config = {
             const message = await $('#alert_content')
             await message.waitForDisplayed()
             await expect(message).toHaveTextContaining(`The new payee ${name} was successfully created.`)
+        })
+        
+        browser.addCommand('fill_out_purchase_foreign_currency',async (currency_option,sell_rate,amount,selected_currency,calculated_cost)=>{
+            const header = await $('h2=Purchase foreign currency cash')
+            await expect(header).toBeDisplayed()
+            const currency_locator = await $('h2=Purchase foreign currency cash').parentElement().$('label=Currency').parentElement().$('select').$(`option=${currency_option}`)
+            await currency_locator.click()
+            const total_rate_sells_locator = await $(`strong*=Sell Rate:`).parentElement().$('span')
+            await total_rate_sells_locator.waitForDisplayed()
+            await expect(total_rate_sells_locator).toHaveTextContaining(sell_rate)
+            const amount_locator = await $('h2=Purchase foreign currency cash').parentElement().$('label=Amount').parentElement().$('#pc_amount')
+            await amount_locator.waitForDisplayed()
+            await amount_locator.setValue(amount)
+            const usd_radio_button = await $(`label*=${selected_currency}`).$('input')
+            await usd_radio_button.waitForClickable()
+            await usd_radio_button.click()
+            const calculate_costs_button = await $('[value="Calculate Costs"]')
+            await calculate_costs_button.waitForClickable()
+            await calculate_costs_button.click()
+            const conversion_cost_locator = await $('h2=Purchase foreign currency cash').parentElement().$('label=Conversion Amount').parentElement().$('#pc_conversion_amount')
+            await expect(conversion_cost_locator).toHaveTextContaining(calculated_cost)
+        })
+
+        browser.addCommand('click_button_purchase',async()=>{
+            const button = await $('[value="Purchase"]')
+            await button.waitForClickable()
+            await button.click()
+        })
+
+        browser.addCommand('check_purchase_successfully',async()=>{
+            const message = await $('#alert_content')
+            await message.waitForDisplayed()
+            await expect(message).toHaveTextContaining('Foreign currency cash was successfully purchased.')
         })
     },
     /**
