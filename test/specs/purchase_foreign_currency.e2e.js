@@ -4,7 +4,7 @@ describe('Exchange Foreign Currency',()=>{
     })
 
     it('Purchase foreign currency cash - Pay Bills',async()=>{
-        await browser.login_user('username','password')
+        await browser.login_user(`${process.env.account_username}`,`${process.env.account_password}`)
         await browser.open_tab('Online Banking')
         await browser.check_open_online_banking_successfully()
         await browser.open_online_banking_service('Pay Bills')
