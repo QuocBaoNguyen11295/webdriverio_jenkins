@@ -34,7 +34,8 @@ exports.config = {
         transfer_fund:['./test/specs/transfer_fund.e2e.js'],
         pay_saved_payee: ['./test/specs/pay_saved_payee.e2e.js'],
         add_new_payee: ['./test/specs/add_new_payee.e2e.js'],
-        purchase_foreign_currency: ['./test/specs/purchase_foreign_currency.e2e.js']
+        purchase_foreign_currency: ['./test/specs/purchase_foreign_currency.e2e.js'],
+        find_transaction: ['./test/specs/find_transaction.e2e.js']
     },
     // Patterns to exclude.
     exclude: [
@@ -439,11 +440,10 @@ exports.config = {
             while(mmyy_text_content != dateToSelect){
                 if(thisMonth){
                     await prev.click()
-                    mmyy_text_content = await mm.getText() + " " + await yy.getText()
                 }else{
                     await next.click()
-                    mmyy_text_content = await mm.getText() + " " + await yy.getText()
                 }
+                mmyy_text_content = await mm.getText() + " " + await yy.getText()
             }
             const date_locator = await $(`//td//a[text()=${date}]`)
             await date_locator.click()
@@ -540,6 +540,92 @@ exports.config = {
             const message = await $('#alert_content')
             await message.waitForDisplayed()
             await expect(message).toHaveTextContaining('Foreign currency cash was successfully purchased.')
+        })
+
+        browser.addCommand('open_tab_account_activity',async(transaction_type)=>{
+            const tab_transaction = await $(`a=${transaction_type}`)
+            await tab_transaction.waitForClickable()
+            await tab_transaction.click()
+            const header = await $(`h2=${transaction_type}`)
+            await expect(header).toBeDisplayed()
+        })
+        
+        browser.addCommand('select_from_date_for_finding_transaction',async(date,dateToSelect)=>{
+            const input_date = await $('#aa_fromDate')
+            await input_date.click()
+            const prev = await $('//span[text()="Prev"]')
+            const next = await $('//span[text()="Next"]')
+            const mm = await $('.ui-datepicker-title > .ui-datepicker-month')
+            const yy = await $('.ui-datepicker-title > .ui-datepicker-year')
+            let mmyy_text_content = await mm.getText() + " " + await yy.getText()
+            //console.log(mmyy_text_content)
+            const thisMonth = moment(dateToSelect, "MMMM YYYY").isBefore();
+            console.log(thisMonth)
+            
+            while(mmyy_text_content != dateToSelect){
+                if(thisMonth){
+                    await prev.click()
+                }else{
+                    await next.click()
+                }
+                mmyy_text_content = await mm.getText() + " " + await yy.getText()
+            }
+            const date_locator = await $(`//td//a[text()=${date}]`)
+            await date_locator.click()
+        })
+
+        browser.addCommand('select_to_date_for_finding_transaction',async(date,dateToSelect)=>{
+            const input_date = await $('#aa_toDate')
+            await input_date.click()
+            const prev = await $('//span[text()="Prev"]')
+            const next = await $('//span[text()="Next"]')
+            const mm = await $('.ui-datepicker-title > .ui-datepicker-month')
+            const yy = await $('.ui-datepicker-title > .ui-datepicker-year')
+            let mmyy_text_content = await mm.getText() + " " + await yy.getText()
+            //console.log(mmyy_text_content)
+            const thisMonth = moment(dateToSelect, "MMMM YYYY").isBefore();
+            console.log(thisMonth)
+            
+            while(mmyy_text_content != dateToSelect){
+                if(thisMonth){
+                    await prev.click()
+                }else{
+                    await next.click()
+                }
+                mmyy_text_content = await mm.getText() + " " + await yy.getText()
+            }
+            const date_locator = await $(`//td//a[text()=${date}]`)
+            await date_locator.click()
+        })
+
+        browser.addCommand('fill_out_information_for_finding_transaction',async(transaction_type,description,from_amount,to_amount,option)=>{
+            const description_locator = await $(`h2=${transaction_type}`).parentElement().$(`label=Description`).parentElement().$('input')
+            await description_locator.waitForDisplayed()
+            await description_locator.setValue(description)
+            const from_amount_locator = await $('#aa_fromAmount')
+            await from_amount_locator.waitForDisplayed()
+            await from_amount_locator.setValue(from_amount)
+            const to_amount_locator = await $('#aa_toAmount')
+            await to_amount_locator.waitForDisplayed()
+            await to_amount_locator.setValue(to_amount)
+            const option_selector = await $(`label=Type`).parentElement().$('select').$(`option=${option}`)
+            await option_selector.click()
+        })
+
+        browser.addCommand('click_button_find',async()=>{
+            const button_find = await $('button=Find')
+            await button_find.click()
+        })
+
+        browser.addCommand('check_the_table',async(index,date,description,deposit,withdrawal)=>{
+            const table = await $('#filtered_transactions_for_account').$('table')
+            await table.waitForDisplayed()
+            const table_body_tr = await $$('#filtered_transactions_for_account > table > tbody > tr')
+            var body_tr_index = table_body_tr[index]
+            await expect(body_tr_index.$$('td')[0]).toHaveTextContaining(date)
+            await expect(body_tr_index.$$('td')[1]).toHaveTextContaining(description)
+            await expect(body_tr_index.$$('td')[2]).toHaveTextContaining(deposit)
+            await expect(body_tr_index.$$('td')[3]).toHaveTextContaining(withdrawal)
         })
     },
     /**
