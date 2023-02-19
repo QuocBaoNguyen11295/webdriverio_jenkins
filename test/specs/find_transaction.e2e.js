@@ -15,7 +15,7 @@ describe('Find Transaction',()=>{
         await browser.click_button_find()
         var list_item = [['2012-09-06','ONLINE TRANSFER REF #UKKSDRQG6L',984.3,''],['2012-09-01','ONLINE TRANSFER REF #UKKSDRQG6L',1000,'']]
         for(var i = 0;i < list_item.length;i++){
-            await browser.check_the_table(i,list_item[i][0],list_item[i][1],list_item[i][2],list_item[i][3])
+            await browser.check_the_table_find_transaction(i,list_item[i][0],list_item[i][1],list_item[i][2],list_item[i][3])
         }
     })
 })

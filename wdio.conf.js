@@ -35,7 +35,8 @@ exports.config = {
         pay_saved_payee: ['./test/specs/pay_saved_payee.e2e.js'],
         add_new_payee: ['./test/specs/add_new_payee.e2e.js'],
         purchase_foreign_currency: ['./test/specs/purchase_foreign_currency.e2e.js'],
-        find_transaction: ['./test/specs/find_transaction.e2e.js']
+        find_transaction: ['./test/specs/find_transaction.e2e.js'],
+        show_transaction: ['./test/specs/show_transaction.e2e.js']
     },
     // Patterns to exclude.
     exclude: [
@@ -612,15 +613,33 @@ exports.config = {
             await option_selector.click()
         })
 
+        browser.addCommand('fill_out_information_for_show_transaction',async(account_type)=>{
+            const header = await $('h2=Show Transactions')
+            const option = await $('h2=Show Transactions').parentElement().$('label=Account').parentElement().$('select').$(`option=${account_type}`)
+            await option.click()
+            await expect(header).toBeDisplayed()
+        })
+
         browser.addCommand('click_button_find',async()=>{
             const button_find = await $('button=Find')
             await button_find.click()
         })
 
-        browser.addCommand('check_the_table',async(index,date,description,deposit,withdrawal)=>{
+        browser.addCommand('check_the_table_find_transaction',async(index,date,description,deposit,withdrawal)=>{
             const table = await $('#filtered_transactions_for_account').$('table')
             await table.waitForDisplayed()
             const table_body_tr = await $$('#filtered_transactions_for_account > table > tbody > tr')
+            var body_tr_index = table_body_tr[index]
+            await expect(body_tr_index.$$('td')[0]).toHaveTextContaining(date)
+            await expect(body_tr_index.$$('td')[1]).toHaveTextContaining(description)
+            await expect(body_tr_index.$$('td')[2]).toHaveTextContaining(deposit)
+            await expect(body_tr_index.$$('td')[3]).toHaveTextContaining(withdrawal)
+        })
+
+        browser.addCommand('check_the_table_show_transaction',async(index,date,description,deposit,withdrawal)=>{
+            const table = await $('#all_transactions_for_account').$('table')
+            await table.waitForDisplayed()
+            const table_body_tr = await $$('#all_transactions_for_account > table > tbody > tr')
             var body_tr_index = table_body_tr[index]
             await expect(body_tr_index.$$('td')[0]).toHaveTextContaining(date)
             await expect(body_tr_index.$$('td')[1]).toHaveTextContaining(description)
