@@ -14,6 +14,7 @@
     "find_transaction": "wdio run ./wdio.conf.js --suite find_transaction",
     "show_transaction": "wdio run ./wdio.conf.js --suite show_transaction",
     "search_keyword":"wdio run ./wdio.conf.js --suite search_keyword",
+    "jenkins": "java -jar jenkins.war -httpPort=8080 --enable-future-java",
     "wdio": "wdio run ./wdio.conf.js"
   },
   "repository": {
