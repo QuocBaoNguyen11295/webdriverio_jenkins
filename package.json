@@ -13,6 +13,7 @@
     "purchase_foreign_currency": "wdio run ./wdio.conf.js --suite purchase_foreign_currency",
     "find_transaction": "wdio run ./wdio.conf.js --suite find_transaction",
     "show_transaction": "wdio run ./wdio.conf.js --suite show_transaction",
+    "search_keyword":"wdio run ./wdio.conf.js --suite search_keyword",
     "wdio": "wdio run ./wdio.conf.js"
   },
   "repository": {

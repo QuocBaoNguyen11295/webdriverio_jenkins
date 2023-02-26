@@ -36,7 +36,8 @@ exports.config = {
         add_new_payee: ['./test/specs/add_new_payee.e2e.js'],
         purchase_foreign_currency: ['./test/specs/purchase_foreign_currency.e2e.js'],
         find_transaction: ['./test/specs/find_transaction.e2e.js'],
-        show_transaction: ['./test/specs/show_transaction.e2e.js']
+        show_transaction: ['./test/specs/show_transaction.e2e.js'],
+        search_keyword: ['./test/specs/search_keyword.e2e.js']
     },
     // Patterns to exclude.
     exclude: [
@@ -645,6 +646,27 @@ exports.config = {
             await expect(body_tr_index.$$('td')[1]).toHaveTextContaining(description)
             await expect(body_tr_index.$$('td')[2]).toHaveTextContaining(deposit)
             await expect(body_tr_index.$$('td')[3]).toHaveTextContaining(withdrawal)
+        })
+
+        browser.addCommand('find_the_articles_based_on_the_keyword',async(keyword)=>{
+            const search_box = await $('[placeholder="Search"]')
+            await search_box.waitForDisplayed()
+            await search_box.setValue(keyword)
+            await browser.keys('\uE007')
+        })
+
+        browser.addCommand('check_the_results_after_finding_keyword',async(keyword)=>{
+            const header = await $('h2')
+            const paragraph = await $('.top_offset')
+            await Promise.all([
+                expect(header).toHaveText('Search Results:'),
+                expect(paragraph).toHaveTextContaining(`The following pages were found for the query: ${keyword}`)
+            ])
+
+            let list_result = await $('.top_offset > ul >li').$$(`a*=${keyword}`)
+            for(let result of list_result){
+                await expect(result).toBeDisplayed()
+            }
         })
     },
     /**
